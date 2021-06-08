@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">  
+
+
+    <script>
+        async function getPokemon()
+        {
+            const response = await fetch("https://pokeapi.co/api/v2/pokemon");  
+            const data = await response.json();
+
+            for(i = 0; i < 5 ; i++)
+            {
+                var result = data.results[i];
+                var btn = document.createElement("button");
+                btn.className = "btn btn-outline-light text-dark";
+                btn.innerHTML = result.name;
+                btn.addEventListener("click", myFunction);
+                document.getElementById('dynamic').appendChild(btn);
+
+            }
+            
+        }
+
+        async function myFunction()
+        {
+            const response = await fetch("https://pokeapi.co/api/v2/pokemon/"+this.innerHTML);  
+            const data = await response.json();
+
+            document.getElementById('name').innerHTML = this.innerHTML;
+
+            var add = document.getElementById('dynamic');
+            for (var i = 0; i < add.childElementCount; i++) {
+                add.childNodes[i].className = "btn btn-outline-light text-dark";
+            }
+
+            
+
+            this.className += "border border-warning text-dark";
+
+            var add = document.getElementById('abilites');
+            while(add.hasChildNodes())
+            {
+                add.removeChild(add.firstChild);
+            }
+
+            for(i = 0 ; i < data.abilities.length; i++)
+            {
+                var btn = document.createElement("button");
+                var result = data.abilities[i].ability;
+                btn.innerHTML = result.name;
+                btn.className = "btn btn-outline-light text-dark";
+                btn.addEventListener("click",abilityClicked);
+                add.appendChild(btn);
+                
+            }
+            document.getElementById('height').innerHTML = data.height;            
+            document.getElementById('experience').innerHTML = data.base_experience;
+
+            console.log(data);
+        }
+
+        async function abilityClicked()
+        {
+            const response = await fetch("https://pokeapi.co/api/v2/ability/"+ this.innerHTML );  
+            const data = await response.json();
+
+            document.getElementById("abilityName").innerHTML = this.innerHTML;
+
+            var add = document.getElementById('abilites');
+            for (var i = 0; i < add.childElementCount; i++) {
+                add.childNodes[i].className = "btn btn-outline-light text-dark";
+            }
+            this.className += " bg-warning";
+
+            for (i = 0; i < data.effect_entries.length;i++)
+            {
+                var language = data.effect_entries[i].language.name;
+
+                if (language == "en") {
+                    document.getElementById("abilityEffect").innerHTML = data.effect_entries[i].effect;
+                    document.getElementById("shortEffect").innerHTML= data.effect_entries[i].short_effect;
+                }
+            }
+            console.log(data);
+    
+            for(i = 0; i<data.flavor_text_entries.length;i++)
+            {
+                var language = data.flavor_text_entries[i].language.name;
+                if (language == "en") {
+
+                    document.getElementById("flavorText").innerHTML = data.flavor_text_entries[i].flavor_text;
+                    return
+                }
+            }
+            
+        }
+
+        getPokemon();
+
+    </script>   
+</head>
+<body>
+    <div class="container border border-dark mt-5">
+        <div class="d-flex justify-content-center mt-3">
+            <p class="border border-dark font-weight-bold px-2 py-2" style="display: inline-block;">
+                Pokémon Database
+            </p>
+        </div>
+
+        <div class="d-flex justify-content-center container " id="dynamic"></div>
+
+        <div class="row mt-3 mb-2">
+            <div class="col">
+                <p class="border border-dark font-weight-bold px-2 py-2" style="display: inline-block;">
+                    Specs
+                </p>
+
+                <div class="container border border-dark">
+                    <p>Name: <span id="name"></span></p>
+                    <p>Abilites: <span id="abilites"></span></p>
+                    <p>Height: <span id="height"></span></p>
+                    <p>Base Experience: <span id="experience"></span></p>
+                </div>
+            </div>
+
+            <div class="col">
+                <p class="border border-dark font-weight-bold px-2 py-2" style="display: inline-block;">
+                    Abilities
+                </p>
+
+                <div class="container border border-dark">
+                    <p>Ability Name: <span id="abilityName"></span></p>
+                    <p>Ability Effect: <span id="abilityEffect"></span></p>
+                    <p>Short Effect: <span id="shortEffect"></span></p>
+                    <p>Flavour Text: <span id="flavorText"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
